@@ -22,7 +22,7 @@ https://github.com/rkumar70900/personal-stylist/raw/main/personal_stylist_demo.m
 - **FastAPI**: High-performance Python web framework
 - **MongoDB**: NoSQL database for storing clothing items and metadata
 - **Marqo**: Vector search for semantic clothing search
-- **Qwen3-VL-4B-Instruct**: Multimodal AI model for image understanding and analysis
+- **Qwen3-VL-4B-Instruct-GGUF:Q4_K_M**: Multimodal AI model for image understanding and analysis
 - **OpenAI API**: For natural language processing and style recommendations
 
 ### Frontend
