@@ -4,7 +4,7 @@ An intelligent wardrobe assistant that helps you organize your clothing items an
 
 ## 🎥 Demo
 
-https://github.com/yourusername/personal-stylist/assets/your-username/personal_stylist_demo.mov
+https://github.com/rkumar70900/personal-stylist/blob/main/personal_stylist_demo.mov
 
 <video src="personal_stylist_demo.mov" controls="controls" style="max-width: 800px;">
   Your browser does not support the video tag.
