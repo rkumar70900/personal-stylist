@@ -8,6 +8,8 @@ https://github.com/rkumar70900/personal-stylist/raw/main/personal_stylist_demo.m
 
 *Click the play button above to see the demo video*
 
+[![Demo](personal_stylist_demo.mov)](personal_stylist_demo.mov)
+
 ## ✨ Features
 
 - **Smart Wardrobe Management**: Upload and categorize your clothing items with AI-powered tagging
