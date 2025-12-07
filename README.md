@@ -2,7 +2,8 @@
 
 An intelligent wardrobe assistant that helps you organize your clothing items and suggests perfect outfits based on occasion, weather, and style preferences.
 
-![Personal Stylist Demo](https://via.placeholder.com/800x500.png?text=Personal+Stylist+Demo)
+![Personal Stylist Demo](personal_stylist_demo.mov)
+*Example of clothing items in the Personal Stylist app*
 
 ## ✨ Features
 
