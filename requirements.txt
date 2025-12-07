@@ -1,0 +1,6 @@
+accelerate
+pymongo
+python-dotenv
+openai
+Pillow
+pyheif
