@@ -24,7 +24,7 @@ prompt = """
     }
 
     Definitions:
-    - category: shirt, t-shirt, jeans, trousers, kurta, blazer, sneaker, sandal, etc.
+    - category: shirt, t-shirt, jeans, trousers, kurta, blazer, shoes, slippers, sneaker, sandal, etc.
     - sub_category: casual, formal, ethnic, sportswear.
     - primary_color: dominant visible color.
     - pattern: solid, striped, checked, floral, graphic.
@@ -76,6 +76,7 @@ def score_outfit(outfit, occasion, weather, style_pref):
     Outfit:
     Top: {outfit['top']['description']}
     Bottom: {outfit['bottom']['description']}
+    Footwear: {outfit['shoes']['description']}
 
     Occasion: {occasion}
     Weather: {weather}

@@ -17,7 +17,6 @@ def process_image(img_path):
 def categorize(items):
     slots = { "top": [], "bottom": [], "shoes": [], "outerwear": [] }
     for i in items:
-        print(i)
         if i is not None:
             part = i["body_part"]
             if part == "upper":
@@ -32,13 +31,18 @@ def categorize(items):
 
 def generate_candidates(slots):
     tops = top_n(slots["top"])
+    print(tops, 'tops')
     bottoms = top_n(slots["bottom"])
-
+    shoes = top_n(slots["shoes"])
+    print(shoes, 'shoes')
+    outerwear = top_n(slots["outerwear"])
     outfits = []
-    for t, b in itertools.product(tops, bottoms):
+    for t, b, s, o in itertools.product(tops, bottoms, shoes, outerwear):
         outfits.append({
                 "top": t,
                 "bottom": b,
+                "shoes": s,
+                "outerwear": o,
             })
 
     return outfits

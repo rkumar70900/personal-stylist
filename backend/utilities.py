@@ -2,6 +2,7 @@ import json
 import base64
 from PIL import Image
 import pillow_heif
+import os
 
 def encode_image(img_path):
     with open(img_path, "rb") as f:

@@ -161,9 +161,7 @@ export async function getBestOutfit(
     body: JSON.stringify(items),
   };
   const response = await fetch(url, requestOptions);
-  
-  console.log('Response status:', response.status, response.statusText);
-  
+    
   if (!response.ok) {
     let error;
     try {

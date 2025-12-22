@@ -191,7 +191,7 @@ async def create_vector_item(item_data: dict):
     """
     try:
         # Validate required fields
-        required_fields = ["image_path", "description"]
+        required_fields = ["image_path", "description", "_id"]
         for field in required_fields:
             if field not in item_data:
                 raise HTTPException(
@@ -199,12 +199,9 @@ async def create_vector_item(item_data: dict):
                     detail=f"Missing required field: {field}"
                 )
         
-        # Generate a unique ID if not provided
-        item_id = str(uuid.uuid4())
-        
         # Save to Marqo
         result = save_to_marqo(
-            id=item_id,
+            id=item_data["_id"],
             description=item_data["description"],
             img_path=item_data["image_path"]
         )
@@ -212,7 +209,7 @@ async def create_vector_item(item_data: dict):
         # Return success response
         return {
             "message": "Item saved to vector database successfully",
-            "item_id": item_id,
+            "item_id": item_data["_id"],
             "marqo_result": result
         }
             
@@ -260,6 +257,38 @@ async def search_style_candidates(query: str = Query(..., description="Search qu
     Search for style candidates based on a text query.
     Returns the top 20 matching items from the vector database.
     """
+    # try:
+    if not query or not query.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Search query cannot be empty"
+        )
+    
+    # Get style candidates
+    results = get_style_candidates(query)
+    results = get_items_by_id(results)
+    
+    return {
+        "message": "Got matching style candidates",
+        "count": len(results),
+        "results": results
+    }
+    
+    # except Exception as e:
+    #     raise HTTPException(
+    #         status_code=500,
+    #         detail=f"Error searching for style candidates: {str(e)}"
+    #     )
+
+@app.get("/outfit/components/")
+async def get_outfit_components(
+    query: str = Query(..., description="Search query for outfit components"),
+    top_items: int = Query(3, description="Number of top items to return per category")
+):
+    """
+    Get outfit components (top, bottom, shoes, outerwear) based on a query.
+    Returns a dictionary with separate lists for each component type.
+    """
     try:
         if not query or not query.strip():
             raise HTTPException(
@@ -267,20 +296,33 @@ async def search_style_candidates(query: str = Query(..., description="Search qu
                 detail="Search query cannot be empty"
             )
         
-        # Get style candidates
-        results = get_style_candidates(query)
-        results = get_items_by_id(results)
+        # Search for each component type separately
+        components = {}
+        for part in ["upper", "lower", "footwear", "outerwear"]:
+            # Get items for this body part
+            results = get_style_candidates(query, body_part=part, limit=top_items)
+            items = get_items_by_id(results)
+            
+            # Map to the correct slot name
+            slot_name = {
+                "upper": "tops",
+                "lower": "bottoms",
+                "footwear": "shoes",
+                "outerwear": "outerwear"
+            }.get(part, part)
+            
+            components[slot_name] = items
         
         return {
-            "message": "Got matching style candidates",
-            "count": len(results),
-            "results": results
+            "message": "Fetched outfit components",
+            "query": query,
+            "components": components
         }
         
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Error searching for style candidates: {str(e)}"
+            detail=f"Error fetching outfit components: {str(e)}"
         )
 
 @app.post("/outfits/categorize/")
@@ -396,46 +438,45 @@ async def get_best_outfit(
     Generate all possible outfit combinations, score them, and return the best one.
     Expects a list of clothing items from MongoDB.
     """
-    try:
-        if not items or not isinstance(items, list):
-            raise HTTPException(
-                status_code=400,
-                detail="Input must be a non-empty list of items"
-            )
-        
-        # Categorize the items
-        slots = categorize(items)
-        
-        # Generate all possible combinations
-        outfits = generate_candidates(slots)
-        
-        if not outfits:
-            raise HTTPException(
-                status_code=400,
-                detail="Could not generate any valid outfit combinations"
-            )
-        
-        # Score the outfits
-        score_outfits(outfits, occasion, weather, style_pref)
-        
-        # Get the best outfit
-        best_outfit = max(outfits, key=lambda x: x["score"])
-        
-        return {
-            "message": "Best outfit selected successfully",
-            "best_outfit": best_outfit,
-            "total_combinations": len(outfits),
-            "score": best_outfit["score"],
-            "reason": best_outfit.get("reason", "")
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
+    # try:
+    if not items or not isinstance(items, list):
         raise HTTPException(
-            status_code=500,
-            detail=f"Error selecting best outfit: {str(e)}"
+            status_code=400,
+            detail="Input must be a non-empty list of items"
         )
+    
+    # Categorize the items
+    slots = categorize(items)    
+    # Generate all possible combinations
+    outfits = generate_candidates(slots)
+    
+    if not outfits:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not generate any valid outfit combinations"
+        )
+    
+    # Score the outfits
+    score_outfits(outfits, occasion, weather, style_pref)
+    
+    # Get the best outfit
+    best_outfit = max(outfits, key=lambda x: x["score"])
+    
+    return {
+        "message": "Best outfit selected successfully",
+        "best_outfit": best_outfit,
+        "total_combinations": len(outfits),
+        "score": best_outfit["score"],
+        "reason": best_outfit.get("reason", "")
+    }
+        
+    # except HTTPException:
+    #     raise
+    # except Exception as e:
+    #     raise HTTPException(
+    #         status_code=500,
+    #         detail=f"Error selecting best outfit: {str(e)}"
+    #     )
 
 # Add this after your other imports
 app.mount("/api/images", StaticFiles(directory=UPLOAD_FOLDER), name="images")
